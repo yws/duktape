@@ -65,6 +65,11 @@ summary: |
   <li><code>DUK_DEFPROP_SET_CONFIGURABLE</code> / <code>DUK_DEFPROP_CLEAR_CONFIGURABLE</code></li>
   </ul>
 
+  <p>In Duktape 2.1.0 more convience defines were added:</p>
+  <ul>
+  <li>FIXME/<li>
+  </ul>
+
   <p>This API call is useful for various things:</p>
   <ul>
   <li>To create properties with non-default attributes directly from C code.</li>
