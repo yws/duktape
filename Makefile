@@ -90,6 +90,7 @@ CONFIGOPTS_EMDUK=-UDUK_USE_FASTINT -UDUK_USE_PACKED_TVAL
 CONFIGOPTS_DUKWEB=--option-file util/dukweb_base.yaml --fixup-file util/dukweb_fixup.h
 
 # Profile guided optimization test set.
+# FIXME
 PGO_TEST_SET=\
 	tests/ecmascript/test-dev-mandel2-func.js \
 	tests/ecmascript/test-dev-totp.js \
