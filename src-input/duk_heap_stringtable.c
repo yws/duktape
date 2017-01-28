@@ -246,6 +246,8 @@ DUK_LOCAL duk_hstring *duk__strtable_alloc_hstring(duk_heap *heap,
 		 * The flag is set lazily for RAM strings.
 		 */
 		DUK_ASSERT(!DUK_HSTRING_HAS_ASCII(res));
+
+		/* FIXME: non-lazy option (smaller) */
 	}
 
 	DUK_DDD(DUK_DDDPRINT("interned string, hash=0x%08lx, blen=%ld, has_arridx=%ld, has_extdata=%ld",
