@@ -1644,7 +1644,7 @@ DUK_LOCAL void duk__handle_call_inner(duk_hthread *thr,
 		/* Unwind. */
 
 		DUK_ASSERT(thr->catchstack_top == entry_catchstack_top);  /* no need to unwind */
-		DUK_ASSERT(thr->callstack_top == entry_callstack_top + 1);
+/*		DUK_ASSERT(thr->callstack_top == entry_callstack_top + 1);  FIXME*/
 		duk_hthread_callstack_unwind(thr, entry_callstack_top);
 		duk_hthread_callstack_shrink_check(thr);
 

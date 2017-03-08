@@ -4488,6 +4488,8 @@ DUK_LOCAL DUK_NOINLINE DUK_HOT void duk__js_execute_bytecode_inner(duk_hthread *
 			idx = (duk_uint_fast_t) DUK_DEC_BC(ins);
 			duk_set_top(ctx, (duk_idx_t) (idx + nargs + 2));   /* [ ... func this arg1 ... argN ] */
 
+			/* FIXME: detect eval(), call() etc using a single SPECIAL_CALL flag. */
+
 			call_flags = 0;
 			tv_func = DUK_GET_TVAL_POSIDX(ctx, idx);
 			if (DUK_TVAL_IS_OBJECT(tv_func)) {
@@ -4539,6 +4541,8 @@ DUK_LOCAL DUK_NOINLINE DUK_HOT void duk__js_execute_bytecode_inner(duk_hthread *
 			duk_uint_fast_t idx;
 			duk_idx_t num_stack_args;
 			duk_small_uint_t call_flags;
+			duk_tval *tv_func;
+			duk_hobject *obj_func;
 #if !defined(DUK_USE_EXEC_FUN_LOCAL)
 			duk_hcompfunc *fun;
 #endif
@@ -4556,6 +4560,30 @@ DUK_LOCAL DUK_NOINLINE DUK_HOT void duk__js_execute_bytecode_inner(duk_hthread *
 			nargs = (duk_small_uint_fast_t) DUK_DEC_A(ins);
 			idx = (duk_uint_fast_t) DUK_DEC_BC(ins);
 			duk_set_top(ctx, (duk_idx_t) (idx + nargs + 2));   /* [ ... func this arg1 ... argN ] */
+
+			/* Detect built-in functions which need very special
+			 * handling.
+			 */
+			tv_func = DUK_GET_TVAL_POSIDX(ctx, idx);
+			if (DUK_TVAL_IS_OBJECT(tv_func)) {
+				obj_func = DUK_TVAL_GET_OBJECT(tv_func);
+				DUK_ASSERT(obj_func != NULL);
+				/* FIXME: flag check */
+
+				if (DUK_HOBJECT_IS_NATFUNC(obj_func) &&
+				    ((duk_hnatfunc *) obj_func)->func == duk_bi_function_prototype_call) {
+					DUK_D(DUK_DPRINT("direct handling for Function.prototype.call()"));
+				}
+				if (DUK_HOBJECT_IS_NATFUNC(obj_func) &&
+				    ((duk_hnatfunc *) obj_func)->func == duk_bi_function_prototype_apply) {
+					DUK_D(DUK_DPRINT("direct handling for Function.prototype.apply()"));
+				}
+				if (DUK_HOBJECT_IS_NATFUNC(obj_func) &&
+				    ((duk_hnatfunc *) obj_func)->func == duk_bi_global_object_eval) {
+					/* FIXME: migrate eval handling here too? */
+					DUK_D(DUK_DPRINT("direct handling for Function.prototype.eval()"));
+				}
+			}
 
 			/* DUK_OP_CALL and DUK_OP_TAILCALL are consecutive
 			 * which allows a simple bit test.

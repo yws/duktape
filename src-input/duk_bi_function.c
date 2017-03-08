@@ -172,6 +172,8 @@ DUK_INTERNAL duk_ret_t duk_bi_function_prototype_apply(duk_context *ctx) {
 	 *  magic = 2: Reflect.construct()
 	 */
 
+	/* FIXME: handle without appearing on call stack. */
+
 	duk_idx_t idx_args;
 	duk_idx_t len;
 	duk_idx_t i;
@@ -247,6 +249,9 @@ DUK_INTERNAL duk_ret_t duk_bi_function_prototype_apply(duk_context *ctx) {
 
 	/* [ func thisArg? arg1 ... argN ] */
 
+	DUK_ASSERT(((duk_hthread *) ctx)->callstack_top > 0);
+	duk_hthread_callstack_unwind((duk_hthread *) ctx, ((duk_hthread *) ctx)->callstack_top - 1);
+
 	if (magic != 2) {
 		/* Function.prototype.apply() or Reflect.apply() */
 		DUK_DDD(DUK_DDDPRINT("apply, func=%!iT, thisArg=%!iT, len=%ld",
@@ -272,6 +277,8 @@ DUK_INTERNAL duk_ret_t duk_bi_function_prototype_apply(duk_context *ctx) {
 DUK_INTERNAL duk_ret_t duk_bi_function_prototype_call(duk_context *ctx) {
 	duk_idx_t nargs;
 
+	/* FIXME: handle without appearing on call stack. */
+
 	/* Step 1 is not necessary because duk_call_method() will take
 	 * care of it.
 	 */
@@ -290,6 +297,9 @@ DUK_INTERNAL duk_ret_t duk_bi_function_prototype_call(duk_context *ctx) {
 	duk_insert(ctx, 0);
 
 	/* [ func thisArg arg1 ... argN ] */
+
+	DUK_ASSERT(((duk_hthread *) ctx)->callstack_top > 0);
+	duk_hthread_callstack_unwind((duk_hthread *) ctx, ((duk_hthread *) ctx)->callstack_top - 1);
 
 	DUK_DDD(DUK_DDDPRINT("func=%!iT, thisArg=%!iT, argcount=%ld, top=%ld",
 	                     (duk_tval *) duk_get_tval(ctx, 0),
